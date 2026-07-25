@@ -1,0 +1,65 @@
+name: kfg
+
+services:
+
+  postgres:
+    image: postgres:18.4-bookworm
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: ${KFG_POSTGRES_ADMIN_USER}
+      POSTGRES_PASSWORD: ${KFG_POSTGRES_ADMIN_PASSWORD}
+      POSTGRES_DB: ${KFG_POSTGRES_ADMIN_DB}
+
+      POSTGRES_INITDB_ARGS: "--data-checksums --auth-host=scram-sha-256"
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+
+      TZ: UTC
+      PGTZ: UTC
+
+      KFG_CUSTOMER_DB_PASSWORD: ${KFG_CUSTOMER_DB_PASSWORD}
+      KFG_KYC_DB_PASSWORD: ${KFG_KYC_DB_PASSWORD}
+      KFG_ACCOUNT_DB_PASSWORD: ${KFG_ACCOUNT_DB_PASSWORD}
+      KFG_LEDGER_DB_PASSWORD: ${KFG_LEDGER_DB_PASSWORD}
+      KFG_BENEFICIARY_DB_PASSWORD: ${KFG_BENEFICIARY_DB_PASSWORD}
+      KFG_PAYMENT_DB_PASSWORD: ${KFG_PAYMENT_DB_PASSWORD}
+      KFG_NOTIFICATION_DB_PASSWORD: ${KFG_NOTIFICATION_DB_PASSWORD}
+      KFG_BACKOFFICE_DB_PASSWORD: ${KFG_BACKOFFICE_DB_PASSWORD}
+      KFG_AUDIT_DB_PASSWORD: ${KFG_AUDIT_DB_PASSWORD}
+      KFG_STATEMENT_DB_PASSWORD: ${KFG_STATEMENT_DB_PASSWORD}
+
+    ports:
+      - "${KFG_POSTGRES_PORT:-5432}:5432"
+
+    volumes:
+      - kfg-postgres-data:/var/lib/postgresql
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+
+    shm_size: 128mb
+
+    mem_limit: 1g
+    cpus: "2.0"
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+    networks:
+      - kfg-network
+
+
+volumes:
+
+  kfg-postgres-data:
+
+
+networks:
+
+  kfg-network:
