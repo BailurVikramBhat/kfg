@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserResponse createUser(CreateUserCommand command) {
-        ensureEmailIsAvailable(command.email());
+        ensureContactDetailsAreAvailable(command);
         KycVerificationContext kycContext = new KycVerificationContext(command.firstName(), command.lastName(), command.email(), command.phoneNumber());
         KycVerificationStrategy strategy = kycStrategyFactory.getStrategy(command.kycType());
         KycVerificationResult result = strategy.verify(kycContext);
@@ -58,9 +58,21 @@ public class UserServiceImpl implements UserService {
                         )
                 );
     }
-    private void ensureEmailIsAvailable(String email) {
-        if(userRepository.existsByEmail(email)){
-            throw new DuplicateResourceException("Email already registered!");
+
+    private void ensureContactDetailsAreAvailable(
+            CreateUserCommand command
+    ) {
+        if (userRepository.existsByEmail(command.email())) {
+            throw new DuplicateResourceException(
+                    "Email already registered: " + command.email()
+            );
+        }
+
+        if (userRepository.existsByPhoneNumber(command.phoneNumber())) {
+            throw new DuplicateResourceException(
+                    "Phone number already registered: "
+                            + command.phoneNumber()
+            );
         }
     }
 }
