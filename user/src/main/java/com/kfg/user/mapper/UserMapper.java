@@ -11,7 +11,7 @@ public class UserMapper {
                 user.getId(),
                 buildFullName(user),
                 user.getEmail(),
-                user.getKycStatus().name()
+                user.getKycStatus()
         );
     }
 

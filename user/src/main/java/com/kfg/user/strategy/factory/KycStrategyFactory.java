@@ -3,12 +3,14 @@ package com.kfg.user.strategy.factory;
 import com.kfg.user.domain.KycType;
 import com.kfg.user.exception.UnsupportedKycTypeException;
 import com.kfg.user.strategy.kyc.KycVerificationStrategy;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Component
 public class KycStrategyFactory {
     private final Map<KycType, KycVerificationStrategy> strategies;
 
