@@ -4,5 +4,5 @@ public enum NextOnboardingStep {
     ADDRESS,
     KYC,
     KYC_REVIEW,
-    COMPLETED
+    NONE
 }

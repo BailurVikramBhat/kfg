@@ -46,7 +46,7 @@ public class OnboardingMapper {
             case DRAFT -> NextOnboardingStep.ADDRESS;
             case READY_FOR_KYC -> NextOnboardingStep.KYC;
             case KYC_IN_PROGRESS -> NextOnboardingStep.KYC_REVIEW;
-            default -> NextOnboardingStep.COMPLETED;
+            default -> NextOnboardingStep.NONE;
         };
     }
 

@@ -25,6 +25,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final URI USER_NOT_FOUND =
             URI.create("urn:kfg:problem:user-not-found");
+    private static final URI COUNTRY_NOT_ENABLED =
+            URI.create("urn:kfg:problem:country-not-enabled");
     private static final URI ONBOARDING_APPLICATION_NOT_FOUND =
             URI.create("urn:kfg:problem:onboarding-application-not-found");
     private static final URI INVALID_ONBOARDING_STATE =
@@ -49,6 +51,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.NOT_FOUND,
                 USER_NOT_FOUND,
                 "User Not Found",
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(CountryNotEnabledException.class)
+    public ProblemDetail handleCountryNotEnabled(
+            CountryNotEnabledException exception,
+            WebRequest request
+    ) {
+        return createProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                COUNTRY_NOT_ENABLED,
+                "Country Not Enabled",
                 exception.getMessage(),
                 request
         );

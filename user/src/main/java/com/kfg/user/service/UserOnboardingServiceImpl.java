@@ -9,6 +9,8 @@ import com.kfg.user.dto.StartOnboardingCommand;
 import com.kfg.user.dto.UpdateBasicDetailsCommand;
 import com.kfg.user.dto.response.OnboardingApplicationSummary;
 import com.kfg.user.dto.response.OnboardingResponse;
+import com.kfg.user.exception.CountryNotEnabledException;
+import com.kfg.user.repository.CountryRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.kfg.user.exception.DuplicateResourceException;
@@ -30,6 +32,7 @@ import java.util.UUID;
 public class UserOnboardingServiceImpl implements UserOnboardingService {
 
     private final UserOnboardingRepository repository;
+    private final CountryRepository countryRepository;
     private final UserRepository userRepository;
     private final OnboardingMapper mapper;
 
@@ -110,6 +113,10 @@ public class UserOnboardingServiceImpl implements UserOnboardingService {
     @Transactional
     public OnboardingResponse saveResidentialAddress(UUID applicationId, SaveResidentialAddressCommand command) {
         UserOnboardingApplication application = findOrThrow(applicationId);
+        String countryCode = command.countryCode();
+        if(!countryRepository.existsByCodeAndEnabledTrue(countryCode)) {
+            throw new CountryNotEnabledException(countryCode + " is not enabled for operation");
+        }
         application.saveResidentialAddress(
                 new ResidentialAddress(
                         command.addressLine1(), command.addressLine2(), command.locality(),
