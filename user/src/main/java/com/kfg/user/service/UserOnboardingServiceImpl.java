@@ -78,6 +78,28 @@ public class UserOnboardingServiceImpl implements UserOnboardingService {
     @Transactional
     public OnboardingResponse updateBasicDetails(UUID applicationId, UpdateBasicDetailsCommand command) {
         UserOnboardingApplication application = findOrThrow(applicationId);
+        if (userRepository.existsByEmail(command.email())) {
+            throw new DuplicateResourceException(
+                    "Email is already registered to an existing account."
+            );
+        }
+        if (userRepository.existsByPhoneNumber(command.phoneNumber())) {
+            throw new DuplicateResourceException(
+                    "Phone number is already registered to an existing account."
+            );
+        }
+        List<UserOnboardingApplication> conflicts = repository.findOtherActiveApplicationsWithContactDetails(
+                applicationId,
+                command.email(),
+                command.phoneNumber(),
+                OnboardingStatus.ACTIVE_STATUSES
+        );
+        if (!conflicts.isEmpty()) {
+            throw new DuplicateResourceException(
+                    "An active onboarding application already exists for this email or phone number."
+            );
+        }
+
         application.updateBasicDetails(
                 new BasicDetails(command.firstName(), command.lastName(), command.email(), command.phoneNumber())
         );

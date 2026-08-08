@@ -35,4 +35,21 @@ public interface UserOnboardingRepository extends JpaRepository<UserOnboardingAp
             @Param("email") String email,
             @Param("phoneNumber") String phoneNumber,
             @Param("activeStatuses") Collection<OnboardingStatus> activeStatuses);
+
+    @Query("""
+                SELECT application
+                FROM UserOnboardingApplication application
+                WHERE application.id <> :applicationId
+                AND application.status IN :activeStatuses
+                AND (
+                    LOWER(application.basicDetails.email) = LOWER(:email)
+                    OR application.basicDetails.phoneNumber = :phoneNumber
+                    )
+            """)
+    List<UserOnboardingApplication> findOtherActiveApplicationsWithContactDetails(
+            @Param("applicationId") UUID applicationId,
+            @Param("email") String email,
+            @Param("phoneNumber") String phoneNumber,
+            @Param("activeStatuses") Collection<OnboardingStatus> activeStatuses
+            );
 }
