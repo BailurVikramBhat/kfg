@@ -15,6 +15,7 @@ import java.util.UUID;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserOnboardingApplication extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
@@ -38,8 +39,8 @@ public class UserOnboardingApplication extends BaseEntity {
 
     private LocalDateTime cancelledAt;
 
-    private void ensureDraft() {
-        if (status != OnboardingStatus.DRAFT) {
+    private void ensureEditable() {
+        if (status != OnboardingStatus.DRAFT && status != OnboardingStatus.READY_FOR_KYC) {
             throw new InvalidOnboardingStateException(
                     "Application cannot be modified in status: " + status
             );
@@ -54,21 +55,20 @@ public class UserOnboardingApplication extends BaseEntity {
     }
 
     public void updateBasicDetails(BasicDetails basicDetails) {
-        ensureDraft();
+        ensureEditable();
         this.basicDetails = basicDetails;
     }
 
     public void saveResidentialAddress(ResidentialAddress residentialAddress) {
-        ensureDraft();
+        ensureEditable();
         this.residentialAddress = residentialAddress;
+        this.status = OnboardingStatus.READY_FOR_KYC;
     }
 
     public void beginKyc(LocalDateTime startedAt) {
-        ensureDraft();
-
-        if (residentialAddress == null) {
-            throw new KycPrerequisiteException(
-                    "Residential address must be captured before KYC"
+        if (status != OnboardingStatus.READY_FOR_KYC) {
+            throw new InvalidOnboardingStateException(
+                    "KYC can only be initiated when the application is ready for KYC"
             );
         }
         status = OnboardingStatus.KYC_IN_PROGRESS;
@@ -81,7 +81,6 @@ public class UserOnboardingApplication extends BaseEntity {
                     "Only an application under KYC review can be completed"
             );
         }
-
         status = OnboardingStatus.COMPLETED;
         this.completedAt = completedAt;
     }
@@ -92,14 +91,12 @@ public class UserOnboardingApplication extends BaseEntity {
                     "Only an application under KYC review can be rejected"
             );
         }
-
         status = OnboardingStatus.REJECTED;
     }
 
     public void cancel(LocalDateTime cancelledAt) {
-        ensureDraft();
+        ensureEditable();
         status = OnboardingStatus.CANCELED;
         this.cancelledAt = cancelledAt;
     }
-
 }

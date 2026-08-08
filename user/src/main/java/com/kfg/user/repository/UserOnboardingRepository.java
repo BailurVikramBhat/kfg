@@ -8,10 +8,19 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
+
+
 public interface UserOnboardingRepository extends JpaRepository<UserOnboardingApplication, UUID> {
+
+    interface StatusCount {
+        OnboardingStatus getStatus();
+        long getCount();
+    }
+
+    @Query("SELECT a.status as status, COUNT(a) as count FROM UserOnboardingApplication a GROUP BY a.status")
+    List<StatusCount> countGroupedByStatus();
 
     @Query("""
                 SELECT application
@@ -26,7 +35,4 @@ public interface UserOnboardingRepository extends JpaRepository<UserOnboardingAp
             @Param("email") String email,
             @Param("phoneNumber") String phoneNumber,
             @Param("activeStatuses") Collection<OnboardingStatus> activeStatuses);
-
-    Optional<UserOnboardingApplication>
-    findByKycVerificationId(UUID kycVerificationId);
 }

@@ -11,7 +11,7 @@ public enum OnboardingStatus {
     CANCELED,
     EXPIRED;
 
-    public static final Set<OnboardingStatus> ACTIVE_STATUSES = Set.of(DRAFT, KYC_IN_PROGRESS);
+    public static final Set<OnboardingStatus> ACTIVE_STATUSES = Set.of(DRAFT, READY_FOR_KYC, KYC_IN_PROGRESS);
     public boolean isTerminal() {
         return switch(this) {
             case COMPLETED, REJECTED, CANCELED, EXPIRED -> true;

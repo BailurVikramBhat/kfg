@@ -25,6 +25,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final URI USER_NOT_FOUND =
             URI.create("urn:kfg:problem:user-not-found");
+    private static final URI ONBOARDING_APPLICATION_NOT_FOUND =
+            URI.create("urn:kfg:problem:onboarding-application-not-found");
+    private static final URI INVALID_ONBOARDING_STATE =
+            URI.create("urn:kfg:problem:invalid-onboarding-state");
     private static final URI DUPLICATE_RESOURCE =
             URI.create("urn:kfg:problem:duplicate-resource");
     private static final URI UNSUPPORTED_KYC_TYPE =
@@ -45,6 +49,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 HttpStatus.NOT_FOUND,
                 USER_NOT_FOUND,
                 "User Not Found",
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(OnboardingApplicationNotFoundException.class)
+    public ProblemDetail handleOnboardingApplicationNotFound(
+            OnboardingApplicationNotFoundException exception,
+            WebRequest request
+    ) {
+        return createProblemDetail(
+                HttpStatus.NOT_FOUND,
+                ONBOARDING_APPLICATION_NOT_FOUND,
+                "Onboarding Application Not Found",
+                exception.getMessage(),
+                request
+        );
+    }
+
+    @ExceptionHandler(InvalidOnboardingStateException.class)
+    public ProblemDetail handleInvalidOnboardingState(
+            InvalidOnboardingStateException exception,
+            WebRequest request
+    ) {
+        return createProblemDetail(
+                HttpStatus.CONFLICT,
+                INVALID_ONBOARDING_STATE,
+                "Invalid Onboarding State",
                 exception.getMessage(),
                 request
         );
