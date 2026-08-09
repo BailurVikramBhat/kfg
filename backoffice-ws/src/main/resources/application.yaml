@@ -4,6 +4,19 @@ server:
 spring:
   application:
     name: backoffice-ws
+  datasource:
+    url: jdbc:postgresql://localhost:5432/backoffice_db
+    username: backoffice_svc
+    password: backoffice_pw
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=24h
+    cache-names: departments,designations
   security:
     oauth2:
       resourceserver:

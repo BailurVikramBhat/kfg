@@ -1,6 +1,7 @@
 package com.kfg.backoffice.controller;
 
 import com.kfg.backoffice.config.SecurityConfig;
+import com.kfg.backoffice.repository.EmployeeProfileRepository;
 import com.kfg.backoffice.security.KeycloakAuthoritiesConverter;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
@@ -23,6 +25,10 @@ class WhoAmIControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    @MockitoBean
+    EmployeeProfileRepository employeeProfileRepository;
 
     @Test
     void noToken_returns401() throws Exception {
