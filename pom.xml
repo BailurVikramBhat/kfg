@@ -21,7 +21,8 @@
 
     <modules>
         <module>platform</module>
-        <module>user</module>
+        <module>onboarding-ws</module>
+        <module>backoffice-ws</module>
     </modules>
 
     <properties>

@@ -13,16 +13,16 @@ import java.util.List;
 public class WhoAmIController {
     @GetMapping("/api/v1/backoffice/whoami")
     public ResponseEntity<?> whoAmI(JwtAuthenticationToken authentication) {
-        List<String> permissions = authentication.getAuthorities().stream()
+        List<String> authorities = authentication.getAuthorities().stream()
                 .filter(a -> !(a instanceof FactorGrantedAuthority))
                 .map(GrantedAuthority::getAuthority)
                 .toList();
         return ResponseEntity.ok(new WhoAmIResponse(
                 authentication.getToken().getSubject(),
                 authentication.getToken().getClaimAsString("preferred_username"),
-                permissions
+                authorities
                 ));
     }
-    private record WhoAmIResponse(String subject, String username, List<String> permissions) {}
+    private record WhoAmIResponse(String subject, String username, List<String> authorities) {}
 
 }
