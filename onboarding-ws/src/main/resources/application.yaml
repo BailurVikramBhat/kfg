@@ -1,0 +1,41 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: onboarding-ws
+  datasource:
+    url: jdbc:postgresql://localhost:5432/onboarding_db
+    username: onboarding_svc
+    password: onboarding_pw
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  cache:
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=24h
+    cache-names: countries
+
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,loggers,httpexchanges
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    httpexchanges:
+      enabled: true
+  info:
+    env:
+      enabled: true
+
+info:
+  app:
+    name: KFG Onboarding Service
+    version: 1.0-SNAPSHOT
